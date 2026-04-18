@@ -14,6 +14,7 @@ Automatically filtering only tags
 Checking their displayed text values
 Finding tags with matching text
 Moving and aligning them together for a cleaner drawing layout
+
 ⚙️ How to use
 Select elements in your Revit view (no need to filter tags manually)
 Run the Dynamo script (.dyn file)
@@ -21,6 +22,7 @@ The script will:
 Extract tags from selection
 Group tags with identical displayed values
 Align them together automatically
+
 📹 Demo
 
 See demo.mp4 for a quick example of how it works.
