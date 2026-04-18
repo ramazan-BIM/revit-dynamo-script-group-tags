@@ -1,0 +1,224 @@
+{
+  "Uuid": "6835fba1-936c-4bc5-9a9b-e117ff0d3202",
+  "IsCustomNode": false,
+  "Description": "",
+  "Name": "Move Tags",
+  "ElementResolver": {
+    "ResolutionMap": {
+      "Revit.Element": {
+        "Key": "Revit.Elements.Element",
+        "Value": "RevitNodes.dll"
+      },
+      "Revit.Elements.Element": {
+        "Key": "Revit.Elements.Element",
+        "Value": "RevitNodes.dll"
+      }
+    }
+  },
+  "Inputs": [
+    {
+      "Id": "446c325308c84a058be9b47c0c7f1b6f",
+      "Name": "Select Model Elements",
+      "Type": "selection",
+      "Type2": "hostSelection",
+      "Value": "5c4643d4-d779-4038-a7f5-37d9a018113f-0031be1c,5c4643d4-d779-4038-a7f5-37d9a018113f-0031be24,5c4643d4-d779-4038-a7f5-37d9a018113f-0031be2f,5c4643d4-d779-4038-a7f5-37d9a018113f-0031be30,5c4643d4-d779-4038-a7f5-37d9a018113f-0031be31,5c4643d4-d779-4038-a7f5-37d9a018113f-0031be33,5c4643d4-d779-4038-a7f5-37d9a018113f-0031be34,5c4643d4-d779-4038-a7f5-37d9a018113f-0031be35,5c4643d4-d779-4038-a7f5-37d9a018113f-0031be36,5c4643d4-d779-4038-a7f5-37d9a018113f-0031be37,5c4643d4-d779-4038-a7f5-37d9a018113f-0031be38,5c4643d4-d779-4038-a7f5-37d9a018113f-0031be3a,5c4643d4-d779-4038-a7f5-37d9a018113f-0031be3b,5c4643d4-d779-4038-a7f5-37d9a018113f-0031be3c",
+      "Description": "Select multiple elements from the Revit document."
+    }
+  ],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "Dynamo.Nodes.DSModelElementsSelection, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "InstanceId": [
+        "5c4643d4-d779-4038-a7f5-37d9a018113f-0031be1c",
+        "5c4643d4-d779-4038-a7f5-37d9a018113f-0031be24",
+        "5c4643d4-d779-4038-a7f5-37d9a018113f-0031be2f",
+        "5c4643d4-d779-4038-a7f5-37d9a018113f-0031be30",
+        "5c4643d4-d779-4038-a7f5-37d9a018113f-0031be31",
+        "5c4643d4-d779-4038-a7f5-37d9a018113f-0031be33",
+        "5c4643d4-d779-4038-a7f5-37d9a018113f-0031be34",
+        "5c4643d4-d779-4038-a7f5-37d9a018113f-0031be35",
+        "5c4643d4-d779-4038-a7f5-37d9a018113f-0031be36",
+        "5c4643d4-d779-4038-a7f5-37d9a018113f-0031be37",
+        "5c4643d4-d779-4038-a7f5-37d9a018113f-0031be38",
+        "5c4643d4-d779-4038-a7f5-37d9a018113f-0031be3a",
+        "5c4643d4-d779-4038-a7f5-37d9a018113f-0031be3b",
+        "5c4643d4-d779-4038-a7f5-37d9a018113f-0031be3c"
+      ],
+      "Id": "446c325308c84a058be9b47c0c7f1b6f",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "7de1dfe2987e4b34b45db2085907e373",
+          "Name": "Elements",
+          "Description": "The selected elements.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Select multiple elements from the Revit document."
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "import clr\r\nclr.AddReference(\"RevitAPI\")\r\nclr.AddReference(\"RevitServices\")\r\nfrom Autodesk.Revit.DB import *\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n\r\n# Load the Python Standard and DesignScript Libraries\r\nimport sys\r\nimport clr\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\no=1\r\n# The inputs to this node will be stored as a list in the IN variables.\r\ne = UnwrapElement(IN[0])\r\ne = [ee for ee in e if isinstance(ee,IndependentTag)]\r\n#l=e[0].TagHeadPosition\r\n#t=e[0].TagText\r\n#if isinstance(l, LocationPoint):\r\n\r\ntag_positions={}\r\n\r\n\r\n    #move_vec = src_pt - tgt_pt\r\n\r\n        #ElementTransformUtils.MoveElement(doc, target_tag.Id, move_vec)\r\n# Place your code below this line\r\nTransactionManager.Instance.EnsureInTransaction(doc) \r\nfor el in e:\r\n    #pass\r\n    tag_text=el.TagText\r\n    if tag_text in tag_positions:\r\n        position=tag_positions[tag_text]\r\n        el.TagHeadPosition=position\r\n    else:\r\n        tag_positions[tag_text]=el.TagHeadPosition\r\n# Assign your output to the OUT \r\n\r\nTransactionManager.Instance.TransactionTaskDone()\r\n\r\n\r\nOUT = tag_positions#[el.Location.Point for el in e]",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "f6579c4886ee40a29ea9b6a8553e0a69",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "8879000b76c74a9992b756ca94bddb96",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "853565345fde423b8d900efd651a9618",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded Python script."
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "Code": "import clr\r\nclr.AddReference(\"RevitAPI\")\r\nclr.AddReference(\"RevitServices\")\r\n\r\nfrom Autodesk.Revit.DB import *\r\nfrom Autodesk.Revit.DB.Mechanical import *\r\nfrom RevitServices.Persistence import DocumentManager\r\nfrom RevitServices.Transactions import TransactionManager\r\ndoc = DocumentManager.Instance.CurrentDBDocument\r\n\r\n\r\ndef find_top_parent(el):\r\n    # Base case: if element is not a FamilyInstance or has no parent, return it\r\n    if not el.HostElementId:\r\n        return None\r\n    # Recursive case: go up to parent\r\n    return (doc.GetElement(el.HostElementId))\r\n\r\ndef get_all_duct_insulation(doc):\r\n    \"\"\"Collect all insulation elements attached to duct elements.\"\"\"\r\n    collector = FilteredElementCollector(doc).OfClass(DuctInsulation)\r\n    return list(collector)\r\n\r\n\r\ndef get_param_value(element, param_name):\r\n    \"\"\"Get parameter value as string or None.\"\"\"\r\n    p = element.LookupParameter(param_name)\r\n    if p:\r\n        if p.StorageType == StorageType.String:\r\n            return p.AsString()\r\n        else:\r\n            return p.AsValueString()\r\n    return None\r\n\r\n\r\ndef set_param_value(element, param_name, value):\r\n    \"\"\"Set string parameter value.\"\"\"\r\n    p = element.LookupParameter(param_name)\r\n    #return p\r\n    if p and p.StorageType == StorageType.String:\r\n        p.Set(str(value))\r\n        return p\r\n        \r\n\r\n\r\ndef calculate_quantity(ins):\r\n    \"\"\"\r\n    Determine quantity based on unit type:\r\n      - \"м.\" or \"м\"  → length (m)\r\n      - \"м²\" or \"м2\" → area (m2)\r\n      - \"м³\" or \"м3\" → volume (m3)\r\n      - \"шт\"         → 1\r\n    \"\"\"\r\n    doc = ins.Document\r\n    ins_type = doc.GetElement(ins.GetTypeId())\r\n\r\n    unit_str = get_param_value(ins_type, \"ADSK_Единица измерения\")\r\n    if not unit_str:\r\n        return None\r\n\r\n    unit_str = unit_str.lower().replace(\" \", \"\")\r\n\r\n    # ---- Length (meters) ----\r\n    if \"м.\" in unit_str or unit_str == \"м\":\r\n        length_ft = ins.get_Parameter(BuiltInParameter.CURVE_ELEM_LENGTH).AsDouble()\r\n        return length_ft * 0.3048   # ft → m\r\n\r\n    # ---- Area (square meters) ----\r\n    if \"м²\" in unit_str or \"м2\" in unit_str:\r\n        area_ft2=0\r\n        area_ft2parameter = ins.LookupParameter(\"Area\")\r\n        if area_ft2parameter:\r\n            #area_ft2=parent\r\n            area_ft2=area_ft2parameter.AsDouble()\r\n            if area_ft2==0:\r\n                parent=find_top_parent(ins)\r\n                if parent:\r\n                    area_p_ft2parameter = parent.LookupParameter(\"ADSK_Размер_Площадь\")\r\n                    if area_p_ft2parameter:\r\n                        area_ft2=area_p_ft2parameter.AsDouble()\r\n                        #area_ft2=parent\r\n            \r\n        #area_ft2=ins.GetMaterialArea()\r\n        return area_ft2 * 0.092903  # ft2 → m2\r\n\r\n    # ---- Volume (cubic meters) ----\r\n    if \"м³\" in unit_str or \"м3\" in unit_str:\r\n        vol_ft3 = ins.LookupParameter(\"Volume\").AsDouble()\r\n        return vol_ft3 * 0.0283168  # ft3 → m3\r\n\r\n    # ---- Each (шт) ----\r\n    if \"шт\" in unit_str:\r\n        return 1\r\n\r\n    return None\r\n\r\n\r\ndef process_insulation(doc,ins):\r\n    \"\"\"Main function to process all insulation.\"\"\"\r\n\r\n    \r\n\r\n    \r\n    out=[]\r\n    doc = ins.Document\r\n    ins_type = doc.GetElement(ins.GetTypeId())\r\n\r\n    # --- 1. Copy Type Comment → ADSK_Наименование ---\r\n    #type_comment = get_param_value(ins_type, \"Type Comments\")\r\n    type_comment = get_param_value(ins_type, \"Type Comments\")\r\n    if type_comment:\r\n        set_param_value(ins, \"ADSK_Наименование\", type_comment)\r\n        \r\n\r\n    # --- 2. Calculate quantity ---\r\n    qty = calculate_quantity(ins)\r\n\r\n    # Write quantity into ADSK_Количество (if exists)\r\n    if qty is not None:\r\n        p_qty = ins.LookupParameter(\"ADSK_Количество\")\r\n        out.append(qty)\r\n        if p_qty:# and p_qty.StorageType == StorageType.Double:\r\n            p_qty.Set(qty)\r\n    set_param_value(ins, \"ADSK_Наименование\", type_comment)\r\n\r\n    \r\n\r\n    return out\r\n    \r\n    \r\n\r\n    \r\nTransactionManager.Instance.EnsureInTransaction(doc)  \r\n        \r\nout=[]\r\nins_list = get_all_duct_insulation(doc)\r\nfor ins in ins_list:\r\n    out.append(process_insulation(doc,ins))\r\n        \r\nTransactionManager.Instance.TransactionTaskDone()\r\n        \r\nOUT=out\r\n    \r\n",
+      "Engine": "CPython3",
+      "VariableInputPorts": true,
+      "Id": "6063507c0bfe48dfa67205e86931da11",
+      "NodeType": "PythonScriptNode",
+      "Inputs": [
+        {
+          "Id": "88cc7090973f42bf8213e19c2073c40f",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "80d6658cc1804edfa69d6d6cf66efaaa",
+          "Name": "OUT",
+          "Description": "Result of the python script",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Runs an embedded Python script."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "7de1dfe2987e4b34b45db2085907e373",
+      "End": "8879000b76c74a9992b756ca94bddb96",
+      "Id": "3bc498fd73d4475cb9bf2cac641c7aaf",
+      "IsHidden": "False"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [],
+  "EnableLegacyPolyCurveBehavior": true,
+  "Thumbnail": "",
+  "GraphDocumentationURL": null,
+  "ExtensionWorkspaceData": [
+    {
+      "ExtensionGuid": "28992e1d-abb9-417f-8b1b-05e053bee670",
+      "Name": "Properties",
+      "Version": "2.19",
+      "Data": {}
+    },
+    {
+      "ExtensionGuid": "DFBD9CC0-DB40-457A-939E-8C8555555A9D",
+      "Name": "Generative Design",
+      "Version": "6.1",
+      "Data": {}
+    }
+  ],
+  "Author": "",
+  "Linting": {
+    "activeLinter": "None",
+    "activeLinterId": "7b75fb44-43fd-4631-a878-29f4d5d8399a",
+    "warningCount": 0,
+    "errorCount": 0
+  },
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "3.0.3.7597",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "_Background Preview",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "ConnectorPins": [],
+    "NodeViews": [
+      {
+        "Id": "446c325308c84a058be9b47c0c7f1b6f",
+        "Name": "Select Model Elements",
+        "IsSetAsInput": true,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 498.8201789801377,
+        "Y": 277.72080249630915
+      },
+      {
+        "Id": "f6579c4886ee40a29ea9b6a8553e0a69",
+        "Name": "Python Script",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "ShowGeometry": true,
+        "X": 976.8339149917591,
+        "Y": 232.67079695204387
+      },
+      {
+        "Id": "6063507c0bfe48dfa67205e86931da11",
+        "Name": "Duct Insulation",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": true,
+        "ShowGeometry": true,
+        "X": 1233.8948158021194,
+        "Y": 179.07050842817426
+      }
+    ],
+    "Annotations": [],
+    "X": -443.89637242727156,
+    "Y": 13.021508254884566,
+    "Zoom": 1.1381034672166321
+  }
+}
